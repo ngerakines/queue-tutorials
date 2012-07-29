@@ -1,0 +1,23 @@
+package com.socklabs;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: ngerakines
+ * Date: 7/29/12
+ * Time: 9:22 AM
+ * To change this template use File | Settings | File Templates.
+ */
+public class BaseMain {
+
+	public static final Logger logger = LoggerFactory.getLogger(BaseMain.class);
+
+	public static int availableProcessors = Runtime.getRuntime().availableProcessors();
+
+	public static final int RING_SIZE = 1024 * 16;
+	public static final int COUNT = 5000000;
+	public static final int THREAD_COUNT = availableProcessors - 1;
+
+}
