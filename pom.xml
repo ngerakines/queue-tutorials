@@ -48,6 +48,7 @@
 		<module>multi</module>
 		<module>bqueue</module>
 		<module>bqmany</module>
+		<module>bqexec</module>
 	</modules>
 
 </project>

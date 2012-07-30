@@ -21,7 +21,7 @@ public class ReaderThread extends Thread {
 	protected int count = 0;
 	private final BlockingQueue<ValueEvent> theQueue;
 
-	public ReaderThread(BlockingQueue<ValueEvent> theQueue) {
+	public ReaderThread(final BlockingQueue<ValueEvent> theQueue) {
 		this.theQueue = theQueue;
 	}
 
