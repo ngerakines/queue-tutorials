@@ -28,26 +28,29 @@ public class Bqmany extends BaseMain {
 
 		final BlockingQueue<ValueEvent> theQueue = new ArrayBlockingQueue<ValueEvent>(BaseMain.RING_SIZE);
 
-		final ReaderThread[] threads = new ReaderThread[] {
-				new ReaderThread(theQueue),
-				new ReaderThread(theQueue),
-				new ReaderThread(theQueue)
-		};
-
-		threads[0].start();
-		threads[1].start();
-		threads[2].start();
+		int[] counts = new int[THREAD_COUNT];
+		final ReaderThread[] threads = new ReaderThread[THREAD_COUNT];
+		for (int threadNumber = 0; threadNumber < THREAD_COUNT; threadNumber++) {
+			threads[threadNumber] = new ReaderThread(theQueue);
+			threads[threadNumber].start();
+			counts[threadNumber] = 0;
+		}
 
 		start();
 
 		for (long i = 0; i < COUNT; i++) {
 			threads[((int) (i % threads.length))].log(new ValueEvent(i));
+			counts[((int) (i % threads.length))]++;
 		}
 
+		/* for (int threadNumber = 0; threadNumber < THREAD_COUNT; threadNumber++) {
+			System.out.println("count for " + threadNumber + " is " + counts[threadNumber]);
+		} */
+
 		try {
-			threads[0].shutDown();
-			threads[1].shutDown();
-			threads[2].shutDown();
+			for (int threadNumber = 0; threadNumber < THREAD_COUNT; threadNumber++) {
+				threads[threadNumber].shutDown();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
