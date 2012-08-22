@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Time: 9:22 AM
  * To change this template use File | Settings | File Templates.
  */
-public class BaseMain {
+public abstract class BaseMain {
 
 	public static final Logger logger = LoggerFactory.getLogger(BaseMain.class);
 
@@ -19,5 +19,19 @@ public class BaseMain {
 	public static final int RING_SIZE = 1024 * 16;
 	public static final int COUNT = 5000000;
 	public static final int THREAD_COUNT = availableProcessors - 1;
+
+	private static long startTime;
+
+	abstract public void run();
+
+	protected void start() {
+		startTime = System.currentTimeMillis();
+		logger.info("Starting at {}", startTime);
+	}
+
+	protected void stop() {
+		final long stopTime = System.currentTimeMillis();
+		logger.info("Stopping at {} ... {}", stopTime, stopTime - startTime);
+	}
 
 }

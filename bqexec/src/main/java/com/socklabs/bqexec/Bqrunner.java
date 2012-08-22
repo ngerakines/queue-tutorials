@@ -21,14 +21,17 @@ public class Bqrunner implements Runnable {
 
 	@Override
 	public void run() {
-		ValueEvent item;
 		try {
-			while ((item = queue.take()).getValue() != -1) {
+			while (consume(queue.take())) {
 				count++;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean consume(final ValueEvent valueEvent) {
+		return valueEvent.getValue() != -1;
 	}
 
 }

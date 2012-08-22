@@ -19,29 +19,38 @@ import java.util.concurrent.Executors;
 public class Bqexec extends BaseMain {
 
 	public static void main(String[] args) throws InterruptedException {
-		long start = System.currentTimeMillis();
-		logger.info("Starting at {}", start);
+		Bqexec bqexec = new Bqexec();
+		bqexec.run();
+	}
+
+	@Override
+	public void run() {
 
 		final BlockingQueue<ValueEvent> theQueue = new ArrayBlockingQueue<ValueEvent>(BaseMain.RING_SIZE);
 
-		final Bqrunner[] threads = new Bqrunner[] {
-				new Bqrunner(theQueue),
-				new Bqrunner(theQueue),
-				new Bqrunner(theQueue)
-		};
+		final Bqrunner[] threads = new Bqrunner[THREAD_COUNT + 1];
 
 		ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-		executor.execute(threads[0]);
-		executor.execute(threads[1]);
-		executor.execute(threads[2]);
-
-		for (long i = 0; i < COUNT; i++) {
-			theQueue.put(new ValueEvent(i));
+		for (int threadNumber = 0; threadNumber < THREAD_COUNT; threadNumber++) {
+			threads[threadNumber] = new Bqrunner(theQueue);
+			executor.execute(threads[threadNumber]);
 		}
 
-		theQueue.add(new ValueEvent(-1));
-		theQueue.add(new ValueEvent(-1));
-		theQueue.add(new ValueEvent(-1));
+		start();
+
+		long i = 0;
+		try {
+			for (i = 0; i < COUNT; i++) {
+				theQueue.put(new ValueEvent(i));
+			}
+		} catch (InterruptedException e) {
+			System.out.println("Failed on put " + i);
+			e.printStackTrace();
+		}
+
+		for (int threadNumber = 0; threadNumber < THREAD_COUNT; threadNumber++) {
+			theQueue.add(new ValueEvent(-1));
+		}
 
 		// This will make the executor accept no new threads
 		// and finish all existing threads in the queue
@@ -51,7 +60,6 @@ public class Bqexec extends BaseMain {
 
 		}
 
-		long stop = System.currentTimeMillis();
-		logger.info("Stopping at {} ... {}", stop, stop - start);
+		stop();
 	}
 }

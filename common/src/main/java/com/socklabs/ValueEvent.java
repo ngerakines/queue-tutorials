@@ -10,9 +10,12 @@ import com.lmax.disruptor.EventFactory;
  * To change this template use File | Settings | File Templates.
  */
 public class ValueEvent {
+
 	private long value;
 
-	public ValueEvent() { }
+	public ValueEvent() {
+		this(-1);
+	}
 
 	public ValueEvent(final long value) {
 		this.value = value;
@@ -28,9 +31,7 @@ public class ValueEvent {
 
 	@Override
 	public String toString() {
-		return "ValueEvent{" +
-				"value=" + value +
-				'}';
+		return "ValueEvent{value=" + value + "}";
 	}
 
 	public final static EventFactory<ValueEvent> EVENT_FACTORY = new EventFactory<ValueEvent>() {

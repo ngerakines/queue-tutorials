@@ -16,23 +16,29 @@ import java.util.concurrent.*;
 public class Bqueue extends BaseMain {
 
 	public static void main(String[] args) throws InterruptedException {
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		Bqueue bqueue = new Bqueue();
+		bqueue.run();
+	}
 
-		long start = System.currentTimeMillis();
-		logger.info("Starting at {}", start);
+	@Override
+	public void run() {
+		start();
 
 		final BlockingQueue<ValueEvent> theQueue = new ArrayBlockingQueue<ValueEvent>(BaseMain.RING_SIZE);
 
-		ReaderThread readerThread = new ReaderThread(theQueue);
+		final ReaderThread readerThread = new ReaderThread(theQueue);
 		readerThread.start();
 
-		for (long i = 0; i < COUNT; i++) {
-			readerThread.log(new ValueEvent(i));
+		try {
+			for (long i = 0; i < COUNT; i++) {
+				readerThread.log(new ValueEvent(i));
+			}
+			readerThread.shutDown();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
-		readerThread.shutDown();
-
-		long stop = System.currentTimeMillis();
-		logger.info("Stopping at {} ... {}", stop, stop - start);
+		stop();
 	}
+
 }

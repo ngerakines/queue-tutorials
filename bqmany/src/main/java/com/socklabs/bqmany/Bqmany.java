@@ -19,10 +19,12 @@ import java.util.concurrent.Executors;
 public class Bqmany extends BaseMain {
 
 	public static void main(String[] args) throws InterruptedException {
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		Bqmany bqmany = new Bqmany();
+		bqmany.run();
+	}
 
-		long start = System.currentTimeMillis();
-		logger.info("Starting at {}", start);
+	@Override
+	public void run() {
 
 		final BlockingQueue<ValueEvent> theQueue = new ArrayBlockingQueue<ValueEvent>(BaseMain.RING_SIZE);
 
@@ -36,14 +38,21 @@ public class Bqmany extends BaseMain {
 		threads[1].start();
 		threads[2].start();
 
+		start();
+
 		for (long i = 0; i < COUNT; i++) {
 			threads[((int) (i % threads.length))].log(new ValueEvent(i));
 		}
-		threads[0].shutDown();
-		threads[1].shutDown();
-		threads[2].shutDown();
 
-		long stop = System.currentTimeMillis();
-		logger.info("Stopping at {} ... {}", stop, stop - start);
+		try {
+			threads[0].shutDown();
+			threads[1].shutDown();
+			threads[2].shutDown();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		stop();
 	}
+
 }

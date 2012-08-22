@@ -12,6 +12,11 @@ import java.util.concurrent.Executors;
 public class Single extends BaseMain {
 
 	public static void main(String[] args) {
+		Single single = new Single();
+		single.run();
+	}
+
+	public void run() {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		final Disruptor<ValueEvent> disruptor = new Disruptor<ValueEvent>(
@@ -23,25 +28,25 @@ public class Single extends BaseMain {
 
 		final RingBuffer<ValueEvent> ringBuffer = disruptor.start();
 
-		long start = System.currentTimeMillis();
-		logger.info("Starting at {}", start);
+		start();
 
 		for (long i = 0; i < COUNT; i++) {
-			long sequence = ringBuffer.next();
-			ValueEvent event = ringBuffer.get(sequence);
+			final long sequence = ringBuffer.next();
+			final ValueEvent event = ringBuffer.get(sequence);
 			event.setValue(i);
 			ringBuffer.publish(sequence);
 		}
 
-		long stop = System.currentTimeMillis();
-		logger.info("Stopping at {} ... {}", stop, stop - start);
+		disruptor.shutdown();
+		executor.shutdown();
+		stop();
 	}
 
 	final static EventHandler<ValueEvent> handler = new BaseEventHandler() {
 
 		@Override
 		public void handle(ValueEvent event, long sequence, boolean endOfBatch) {
-			return;
+			// Do nothing.
 		}
 
 	};

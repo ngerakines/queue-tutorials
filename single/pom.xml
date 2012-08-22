@@ -13,6 +13,9 @@
 	<groupId>com.socklabs</groupId>
 	<artifactId>goldfish-single</artifactId>
 
+	<name>goldfish-single</name>
+	<description>An example of disruptor using a single thread.</description>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.socklabs</groupId>

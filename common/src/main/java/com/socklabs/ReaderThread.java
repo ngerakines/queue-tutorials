@@ -15,7 +15,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class ReaderThread extends Thread {
 
-	public static final ValueEvent SHUTDOWN_REQ = new ValueEvent(-1);
+	public static final ValueEvent SHUTDOWN_REQ = new ValueEvent();
 	private volatile boolean shuttingDown, loggerTerminated;
 
 	protected int count = 0;
@@ -27,18 +27,25 @@ public class ReaderThread extends Thread {
 
 	public void run() {
 		try {
-			ValueEvent item;
-			while ((item = theQueue.take()).getValue() != -1) {
+			while (consume(theQueue.take())) {
 				count++;
 			}
 		} catch (InterruptedException iex) {
+			// Do nothing.
 		} finally {
 			loggerTerminated = true;
 		}
 	}
 
+	private boolean consume(final ValueEvent valueEvent) {
+		return valueEvent.getValue() != -1;
+	}
+
 	public void log(ValueEvent event) {
 		if (shuttingDown || loggerTerminated) {
+			return;
+		}
+		if (event == null) {
 			return;
 		}
 		try {
@@ -53,4 +60,5 @@ public class ReaderThread extends Thread {
 		shuttingDown = true;
 		theQueue.put(SHUTDOWN_REQ);
 	}
+
 }
